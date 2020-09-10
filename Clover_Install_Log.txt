@@ -1,0 +1,63 @@
+
+Clover EFI installer log - Sun Aug 30 21:55:39 WIB 2020
+Installer version: r5121 (commit: 2607bd4fb) EFI bootloader
+======================================================
+/dev/disk0 (internal, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *1.0 TB     disk0
+   1:       Microsoft Basic Data Program                 319.0 GB   disk0s1
+   2:       Microsoft Basic Data ADIT CORP               668.8 GB   disk0s2
+   3:       Microsoft Basic Data EFI                     209.7 MB   disk0s3
+
+/dev/disk1 (internal, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *240.1 GB   disk1
+   1:                        EFI NO NAME                 314.6 MB   disk1s1
+   2:         Microsoft Reserved                         16.8 MB    disk1s2
+   3:       Microsoft Basic Data                         125.8 GB   disk1s3
+   4:                 Apple_APFS Container disk2         113.8 GB   disk1s4
+
+/dev/disk2 (synthesized):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      APFS Container Scheme -                      +113.8 GB   disk2
+                                 Physical Store disk1s4
+   1:                APFS Volume Mac - Data              20.0 GB    disk2s1
+   2:                APFS Volume Preboot                 81.5 MB    disk2s2
+   3:                APFS Volume Recovery                528.9 MB   disk2s3
+   4:                APFS Volume VM                      1.1 MB     disk2s4
+   5:                APFS Volume Mac                     11.3 GB    disk2s5
+
+Target volume /Volumes/Mac on disk2 is APFS on physical store disk1s4
+======================================================
+Backing up EFI files
+
+Backing up stage2 file /Volumes/Mac/EFIROOTDIR/boot  to /Volumes/Mac/EFI-Backups/r5107/2020-08-30-21h55/boot
+Backing up /Volumes/Mac/EFIROOTDIR/EFI folder to /Volumes/Mac/EFI-Backups/r5107/2020-08-30-21h55/EFI
+No Active Partition
+
+Stage 0 - Writing boot0ss to /dev/rdisk1
+dd if=/dev/rdisk1 count=1 bs=512 of=/tmp/origMBR
+cp /tmp/origMBR /tmp/newMBR
+dd if=//usr/standalone/i386/boot0ss of=/tmp/newMBR bs=440 count=1 conv=notrunc
+fdisk -f /tmp/newMBR -u -y /dev/rdisk1
+
+Stage 1 - Writing boot1f32 to /dev/rdisk1s1
+dd if=/dev/rdisk1s1 count=1 bs=512 of=/tmp/origbs
+boot volume format is FAT32
+cp /tmp/boot1f32 /tmp/newbs
+dd if=/tmp/origbs of=/tmp/newbs skip=3 seek=3 bs=1 count=87 conv=notrunc
+dd if=/tmp/newbs of=/dev/rdisk1s1
+
+Stage 2 - Written boot6 (x64) to /Volumes/ESP/boot
+Removing UEFI/OcQuirks.efi because AptioMemoryFix.efi is installed
+Removing UEFI/OpenRuntime.efi because AptioMemoryFix.efi is installed
+======================================================
+Installing RC Scripts
+
+Installing RC scripts on target volume '/'
+
+Activating /etc/rc.boot.d/70.disable_sleep_proxy_client.local rc script
+
+======================================================
+=========== Clover EFI Installation Finish ===========
+======================================================
